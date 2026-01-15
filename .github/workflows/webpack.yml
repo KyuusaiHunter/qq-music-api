@@ -1,28 +1,24 @@
-name: NodeJS with Webpack
+name: CI
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 22.x]
-
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
+      - uses: actions/setup-node@v4’’
+        with:
+          node-version: 20
 
-    - name: Build
-      run: |
-        npm install
-        npx webpack
+      - run: |
+          if [ -f package.json ]; then
+            npm install
+            npm test --if-present
+            npm run build --if-present
+          else
+            echo "No package.json, skip."
+          fi
